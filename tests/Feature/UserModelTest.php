@@ -12,7 +12,8 @@ class UserModelTest extends TestCase
     function test_it_load_the_user_list_page()
     {
         $this->get('/usuarios')
-            ->assertStatus(200);
+            ->assertStatus(200)
+            ->assertSee('Welcome User');
     }
 
     /** @test */
@@ -27,5 +28,19 @@ class UserModelTest extends TestCase
         $this->get('/usuarios/nuevo')
             ->assertStatus(200)
             ->assertSee('Usario nuevo');
+    }
+
+    /** @test */
+    function it_loads_the_saludo_for_user_name_page() {
+        $this->get('/saludo/Daniel')
+            ->assertStatus(200)
+            ->assertSee('Hola Daniel');
+    }
+
+    /** @test */
+    function it_loads_the_saludo_for_nickname_page() {
+        $this->get('/saludo/Daniel/Crack')
+            ->assertStatus(200)
+            ->assertSee('Hola Daniel, tu apodo es Crack');
     }
 }

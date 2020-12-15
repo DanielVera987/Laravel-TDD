@@ -1,17 +1,16 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/usuarios', function () {
-    return view('welcome');
-});
+Route::get('/usuarios', 'UserController@index');
 
-Route::get('/usuarios/{id}', function ($id) {
-    return "El id del usuario es {$id}";
-})->where('id', '[0-9]+');
+Route::get('/usuarios/{id}', 'UserController@show')
+    ->where('id', '[0-9]+');
 
-Route::get('/usuarios/nuevo', function () {
-    return "Usario nuevo";
-});
+Route::get('/usuarios/nuevo', 'UserController@create');
+
+Route::get('/saludo/{name}/{nickname?}', 'WelcomeController@index');
