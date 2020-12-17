@@ -28,6 +28,7 @@ class UserSeeder extends Seeder
             'name' => 'Daniel',
             'email' => 'prueba@prueba.com',
             'password' => bcrypt('1234'),
+            'is_admin' => true,
             'profession_id' => $profession->id
         ]);
     }
