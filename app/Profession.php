@@ -13,4 +13,8 @@ class Profession extends Model
     protected $casts = [
         'is_admin' => 'boolean'
     ];
+
+    public function users() {
+        $this->hasMany(User::class);
+    }
 }

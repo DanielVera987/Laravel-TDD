@@ -18,6 +18,8 @@ class ProfessionSeeder extends Seeder
 
         //DB::table('profession')->insert();
         
+        factory(Profession::class)->create();
+
         Profession::create([
             'title' => 'Backend Developer'
         ]);
