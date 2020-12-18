@@ -1,15 +1,18 @@
 @extends('layout.layout')
 
 @section('content')
-    @foreach($users as $value)
-    <h1>{{ e($value) }}</h1>
-    @endforeach
-    
     <div class="flex-center position-ref full-height">
         <div class="content">
             <div class="title m-b-md">
-                Welcome User
+               <h1>Listado de usuarios</h1>
             </div>
         </div>
     </div>
+    <ul>
+    @forelse($users as $value)
+        <li>{{ $value->name }} - {{ $value->email }}</li>
+    @empty
+        No hay usuarios registrados.
+    @endforelse
+    <ul>
 @endsection
