@@ -10,7 +10,7 @@
     </div>
     <ul>
     @forelse($users as $value)
-        <li>{{ $value->name }} - {{ $value->email }}</li>
+        <li>{{ $value->name }} - {{ $value->email }} <a href="{{ route('users.show', ['id' => "{$value->id}"]) }}">Ver detalle</a></li>
     @empty
         No hay usuarios registrados.
     @endforelse

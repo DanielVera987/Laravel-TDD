@@ -12,24 +12,23 @@ class UserModelTest extends TestCase
 {
     use RefreshDatabase;
 
-    /* @return void */
-     /** @test */
-     function it_shows_the_users_list()
-     {
-         factory(User::class)->create([
-             'name' => 'Joel'
-         ]);
- 
-         factory(User::class)->create([
-             'name' => 'Ellie',
-         ]);
- 
-         $this->get('/usuarios')
-             ->assertStatus(200)
-             ->assertSee('Listado de usuarios')
-             ->assertSee('Joel')
-             ->assertSee('Ellie');
-     }
+    /** @test */
+    function it_shows_the_users_list()
+    {
+        factory(User::class)->create([
+            'name' => 'Joel'
+        ]);
+
+        factory(User::class)->create([
+            'name' => 'Ellie',
+        ]);
+
+        $this->get('/usuarios')
+            ->assertStatus(200)
+            ->assertSee('Listado de usuarios')
+            ->assertSee('Joel')
+            ->assertSee('Ellie');
+    }
 
     /** @test */
     function it_shows_a_default_message_if_the_users_list_is_empty()
@@ -43,16 +42,27 @@ class UserModelTest extends TestCase
 
     /** @test */
     function it_loads_the_users_details_page() {
-        $this->get('/usuarios/5')
+        $user = factory(User::class)->create([
+            'name' => 'Daniel Vera'
+        ]);
+
+        $this->get('/usuarios/' . $user->id)
             ->assertStatus(200)
-            ->assertSee('El id del usuario es 5');
+            ->assertSee('Daniel Vera');
+    }
+
+    /** @test */
+    function it_display_a_404_error_if_the_users_is_not_find() {
+        $this->get('/usuarios/144')
+            ->assertStatus(404)
+            ->assertSee('Pagina no encontrada');
     }
 
     /** @test */
     function it_loads_create_new_user_page() {
         $this->get('/usuarios/nuevo')
             ->assertStatus(200)
-            ->assertSee('Usario nuevo');
+            ->assertSee('Crear Nuevo Usuario');
     }
 
     /** @test */

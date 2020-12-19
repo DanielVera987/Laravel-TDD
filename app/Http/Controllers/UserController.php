@@ -15,11 +15,17 @@ class UserController extends Controller
         ]);
     }
 
-    public function show($id) {
-        return "El id del usuario es {$id}";
+    public function show(User $user) {
+        return view('users_show', [
+            'user' => $user
+        ]);
     } 
 
     public function create() {
-        return "Usario nuevo";
+        return view('users_create');
+    }
+
+    public function store() {
+        return 'Hola';
     }
 }
