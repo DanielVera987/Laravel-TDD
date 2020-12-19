@@ -78,4 +78,20 @@ class UserModelTest extends TestCase
             ->assertStatus(200)
             ->assertSee('Hola Daniel, tu apodo es Crack');
     }
+
+    /** @test */
+    function it_creates_a_new_user() {
+        // Creamos el post mediante el test
+        $this->post('/usuarios', [
+            'name' => 'Daniel Alberto',
+            'email' => 'daniel@daniel.com',
+            'password' => '1234'
+        ]);
+
+        // Verificamos si se creo en la base de datos
+        $this->assertDatabaseHas('users', [
+            'name' => 'Daniel Alberto',
+            'email' => 'daniel@daniel.com',
+        ]);
+    }   
 }

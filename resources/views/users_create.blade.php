@@ -6,7 +6,7 @@
           <h1>Crear Nuevo Usuario</h1>
 
           <form action="{{ route('user.store') }}" method="post">
-            {{ @csrf_field() }}
+            {{ csrf_field() }}
             <input type="submit" value="Crear">
           </form>
 
