@@ -41,7 +41,8 @@ class UserModelTest extends TestCase
     }
 
     /** @test */
-    function it_loads_the_users_details_page() {
+    function it_loads_the_users_details_page() 
+    {
         $user = factory(User::class)->create([
             'name' => 'Daniel Vera'
         ]);
@@ -52,46 +53,126 @@ class UserModelTest extends TestCase
     }
 
     /** @test */
-    function it_display_a_404_error_if_the_users_is_not_find() {
+    function it_display_a_404_error_if_the_users_is_not_find() 
+    {
         $this->get('/usuarios/144')
             ->assertStatus(404)
             ->assertSee('Pagina no encontrada');
     }
 
     /** @test */
-    function it_loads_create_new_user_page() {
+    function it_loads_create_new_user_page() 
+    {
         $this->get('/usuarios/nuevo')
             ->assertStatus(200)
             ->assertSee('Crear Nuevo Usuario');
     }
 
     /** @test */
-    function it_loads_the_saludo_for_user_name_page() {
+    function it_loads_the_saludo_for_user_name_page() 
+    {
         $this->get('/saludo/Daniel')
             ->assertStatus(200)
             ->assertSee('Hola Daniel');
     }
 
     /** @test */
-    function it_loads_the_saludo_for_nickname_page() {
+    function it_loads_the_saludo_for_nickname_page() 
+    {
         $this->get('/saludo/Daniel/Crack')
             ->assertStatus(200)
             ->assertSee('Hola Daniel, tu apodo es Crack');
     }
 
     /** @test */
-    function it_creates_a_new_user() {
+    function it_creates_a_new_user() 
+    {
+
         // Creamos el post mediante el test
-        $this->post('/usuarios', [
-            'name' => 'Daniel Alberto',
-            'email' => 'daniel@daniel.com',
-            'password' => '1234'
-        ]);
+        $this->from(route('users'))
+            ->post('/usuarios', [
+                'name' => 'Daniel Alberto',
+                'email' => 'daniel@daniel.com',
+                'password' => '123456'
+            ])->assertRedirect(route('users'));
 
         // Verificamos si se creo en la base de datos
-        $this->assertDatabaseHas('users', [
+        $this->assertCredentials([
             'name' => 'Daniel Alberto',
             'email' => 'daniel@daniel.com',
+            'password' => '123456'
         ]);
     }   
+
+    /** @test */
+    function the_name_is_required() 
+    {
+        DB::table('users')->truncate();
+
+        $this->from(route('users.create'))
+            ->post('/usuarios/', [
+                'name' => '',
+                'email' => 'daniel@danie.com',
+                'password' => '123456'
+            ])->assertRedirect(route('users.create'))
+            ->assertSessionHasErrors(['name' => 'El campo nombre es obligatorio']);
+
+        $this->assertEquals(0, User::count());
+
+        $this->assertDatabaseMissing('users', [
+            'email' => 'daniel@danie.com',
+        ]);
+    }
+
+    /** @test */
+    function the_email_is_required() 
+    {
+        DB::table('users')->truncate();
+
+        $this->from(route('users.create'))
+            ->post('/usuarios/', [
+                'name' => 'Daniel',
+                'email' => '',
+                'password' => '123456'
+            ])->assertRedirect(route('users.create'))
+            ->assertSessionHasErrors(['email' => 'El campo email es obligatorio']);
+
+        $this->assertEquals(0, User::count());
+    }
+
+    /** @test */
+    function the_email_is_must_be_unique() 
+    {
+        DB::table('users')->truncate();
+
+        factory(User::class)->create([
+            'name' => 'Daniel',
+            'email' => 'daniel@danie.com',
+            'password' => '123456'
+        ]);
+
+        $this->from(route('users.create'))
+            ->post('/usuarios/', [
+                'name' => 'Daniel',
+                'email' => 'daniel@danie.com',
+                'password' => '123456'
+            ])->assertRedirect(route('users.create'))
+            ->assertSessionHasErrors(['email']);
+    }
+
+    /** @test */
+    function the_password_is_required() 
+    {
+        DB::table('users')->truncate();
+
+        $this->from(route('users.create'))
+            ->post('/usuarios/', [
+                'name' => 'Daniel',
+                'email' => 'daniel@danie.com',
+                'password' => ''
+            ])->assertRedirect(route('users.create'))
+            ->assertSessionHasErrors(['password' => 'El campo password es obligatorio']);
+
+        $this->assertEquals(0, User::count());
+    }
 }

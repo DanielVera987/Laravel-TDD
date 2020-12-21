@@ -26,6 +26,22 @@ class UserController extends Controller
     }
 
     public function store() {
-        return 'Hola';
+        $data = request()->validate([
+            'name' => 'required',
+            'email' => ['email','required','unique:users,email'],
+            'password' => 'required|between:6,14'
+        ], [
+            'name.required' => 'El campo nombre es obligatorio',
+            'email.required' => 'El campo email es obligatorio',
+            'password.required' => 'El campo password es obligatorio'
+        ]);
+
+        User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => bcrypt($data['password'])
+        ]);
+
+        return redirect()->route('users');
     }
 }
