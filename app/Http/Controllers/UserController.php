@@ -44,4 +44,10 @@ class UserController extends Controller
 
         return redirect()->route('users');
     }
+
+    public function edit(User $user){
+        return view('users_edit', [
+            "user" => $user
+        ]);
+    }
 }
