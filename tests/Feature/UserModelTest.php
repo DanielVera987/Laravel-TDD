@@ -189,4 +189,66 @@ class UserModelTest extends TestCase
                 return $viewUser->id == $user->id;
             });
     }
+
+    /** @test */
+    function it_update_a_user() 
+    {
+        $user = factory(User::class)->create();
+
+        // Creamos el post mediante el test
+        $this->put("/usuarios/{$user->id}", [
+                'name' => 'Daniel Alberto',
+                'email' => 'daniel@daniel.com',
+                'password' => '123456'
+            ])->assertRedirect(route('user.edit', ['id' => $user->id]));
+
+        // Verificamos si se creo en la base de datos
+        $this->assertCredentials([
+            'name' => 'Daniel Alberto',
+            'email' => 'daniel@daniel.com',
+            'password' => '123456'
+        ]);
+    }  
+
+    /** @test */
+    function the_name_is_required_when_updating_a_user()
+    {
+        DB::table('users')->truncate();
+
+        $user = factory(User::class)->create();
+
+        // Creamos el post mediante el test
+        $this->from("/usuarios/{$user->id}/editar")
+            ->put("/usuarios/{$user->id}", [
+                'name' => '',
+                'email' => 'daniel@daniel.com',
+                'password' => '123456'
+            ])->assertRedirect("/usuarios/{$user->id}/editar")
+            ->assertSessionHasErrors(['name' => 'El campo nombre es obligatorio']);
+
+        $this->assertDatabaseMissing('users', [
+            'email' => 'daniel@daniel.com'
+        ]);
+    }
+
+    /** @test */
+    function the_email_is_required_when_updating_a_user()
+    {
+        DB::table('users')->truncate();
+
+        $user = factory(User::class)->create();
+
+        // Creamos el post mediante el test
+        $this->from("/usuarios/{$user->id}/editar")
+            ->put("/usuarios/{$user->id}", [
+                'name' => 'Daniel',
+                'email' => 'correo-no-valido',
+                'password' => '123456'
+            ])->assertRedirect("/usuarios/{$user->id}/editar")
+            ->assertSessionHasErrors('email');
+
+        $this->assertDatabaseMissing('users', [
+            'email' => 'daniel@daniel.com'
+        ]);
+    }
 }

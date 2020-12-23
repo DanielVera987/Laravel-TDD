@@ -45,9 +45,30 @@ class UserController extends Controller
         return redirect()->route('users');
     }
 
-    public function edit(User $user){
+    public function edit(User $user)
+    {
         return view('users_edit', [
             "user" => $user
         ]);
+    }
+
+    public function update(User $user) 
+    {
+
+        $data = request()->validate([
+            'name' => 'required',
+            'email' => ['email','required','unique:users,email'],
+            'password' => 'required|between:6,14'
+        ], [
+            'name.required' => 'El campo nombre es obligatorio',
+            'email.required' => 'El campo email es obligatorio',
+            'password.required' => 'El campo password es obligatorio'
+        ]);
+
+        $data['password'] = bcrypt($data['password']);
+
+        $user->update($data);
+
+        return redirect("/usuarios/{$user->id}/editar");
     }
 }

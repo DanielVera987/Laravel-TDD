@@ -12,7 +12,8 @@
             </div>
           @endif
 
-          <form action="{{ route('user.store') }}" method="post">
+          <form action="{{ url("usuarios/{$user->id}") }}" method="post">
+            {{ method_field('PUT') }}
             {{ csrf_field() }}
 
             <input type="text" name="name" value="{{ old('user', $user->name) }}">
