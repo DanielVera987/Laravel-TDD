@@ -300,4 +300,18 @@ class UserModelTest extends TestCase
             'password' => $oldPassword // VERY IMPORTANT!
         ]);
     }
+
+    /** @test*/
+    function it_delete_a_user(){
+        DB::table('users')->truncate();
+
+        $user = factory(User::class)->create();
+
+        $this->delete("/usuarios/{$user->id}")
+            ->assertRedirect('/usuarios');
+
+        $this->assertDatabaseMissing('users', [
+            'id' => $user->id
+        ]);
+    }
 }

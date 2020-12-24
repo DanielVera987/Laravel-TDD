@@ -75,4 +75,10 @@ class UserController extends Controller
 
         return redirect("/usuarios/{$user->id}/editar");
     }
+
+    public function destroy(User $user) {
+        $user->delete();
+
+        return redirect('/usuarios');
+    }
 }
