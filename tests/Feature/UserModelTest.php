@@ -251,4 +251,53 @@ class UserModelTest extends TestCase
             'email' => 'daniel@daniel.com'
         ]);
     }
+
+    /** @test */
+    function the_users_email_can_stay_the_same_when_updating_the_user()
+    {
+        DB::table('users')->truncate();
+
+        $user = factory(User::class)->create([
+            'email' => 'duilio@styde.net'
+        ]);
+
+        $this->from("usuarios/{$user->id}/editar")
+            ->put("usuarios/{$user->id}", [
+                'name' => 'Duilio Palacios',
+                'email' => 'duilio@styde.net',
+                'password' => '12345678'
+            ])
+            ->assertRedirect("usuarios/{$user->id}/editar"); // (users.show)
+
+        $this->assertDatabaseHas('users', [
+            'name' => 'Duilio Palacios',
+            'email' => 'duilio@styde.net',
+        ]);
+    }
+
+    /** @test */
+    function the_password_is_optional_when_updating_a_user()
+    {
+        DB::table('users')->truncate();
+
+        $oldPassword = 'CLAVE_ANTERIOR';
+
+        $user = factory(User::class)->create([
+            'password' => bcrypt($oldPassword)
+        ]);
+
+        $this->from("usuarios/{$user->id}/editar")
+            ->put("usuarios/{$user->id}", [
+                'name' => 'Duilio',
+                'email' => 'duilio@styde.net',
+                'password' => ''
+            ])
+            ->assertRedirect("usuarios/{$user->id}/editar"); // (users.show)
+
+        $this->assertCredentials([
+            'name' => 'Duilio',
+            'email' => 'duilio@styde.net',
+            'password' => $oldPassword // VERY IMPORTANT!
+        ]);
+    }
 }
